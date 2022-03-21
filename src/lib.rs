@@ -104,8 +104,9 @@ impl Decoder {
     let res = match self.seq {
       [Some(0x1b),None,None,None,None]
       | [Some(0x1b),Some(0x5b),None,None,None]
+      | [Some(0x1b),Some(0x4f),None,None,None]
       | [Some(0x1b),Some(0x5b),Some(0x33|0x35|0x36),None,None]
-      | [Some(0x1b),Some(0x5b),Some(0x31),None|Some(0x35|0x37|0x39),None]
+      | [Some(0x1b),Some(0x5b),Some(0x31),None|Some(0x35|0x37|0x38|0x39),None]
       | [Some(0x1b),Some(0x5b),Some(0x32),None|Some(0x30|0x31|0x33|0x34),None] => {
         vec![]
       },
@@ -141,13 +142,14 @@ impl Decoder {
           vec![KeyCode::Escape]
         }
       },
-      [Some(0x1b),Some(0x5b),Some(x),None,None] => {
+      [Some(0x1b),Some(0x5b|0x4f),Some(x),None,None] => {
         self.lookahead = lookahead(x);
+        let c = self.seq[1].unwrap();
         if self.lookahead == 0 {
-          vec![KeyCode::Escape,KeyCode::Char(char::from(0x5b)),lookup1(x)]
+          vec![KeyCode::Escape,KeyCode::Char(char::from(c)),lookup1(x)]
         } else {
           self.seq = [Some(x),None,None,None,None];
-          vec![KeyCode::Escape,KeyCode::Char(char::from(0x5b))]
+          vec![KeyCode::Escape,KeyCode::Char(char::from(c))]
         }
       },
       [Some(0x1b),Some(0x5b),Some(0x31|0x32|0x33|0x35|0x36),Some(x),None] => {
