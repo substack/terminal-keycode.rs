@@ -1,3 +1,5 @@
+#![doc=include_str!("../readme.md")]
+
 #[derive(Debug,Clone,PartialEq)]
 pub enum KeyCode {
   ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
@@ -19,6 +21,8 @@ pub enum KeyCode {
 }
 
 impl KeyCode {
+  /// KeyCodes are printable if they have a visible representation as a character, including
+  /// whitespace.
   pub fn printable(&self) -> Option<char> {
     match self {
       Self::Char(c) => Some(*c),
@@ -29,6 +33,7 @@ impl KeyCode {
       _ => None,
     }
   }
+  /// Return the terminal byte sequences for a given KeyCode.
   pub fn bytes(&self) -> Vec<u8> {
     match self {
       Self::ArrowUp => vec![0x1b,0x5b,0x41],
@@ -109,6 +114,8 @@ impl Decoder {
   pub fn new() -> Self {
     Self::default()
   }
+  /// Write a single byte, generating zero or more key codes based on internal buffering and
+  /// internal decoding states.
   pub fn write(&mut self, b: u8) -> Vec<KeyCode> {
     self.seq[self.index] = Some(b);
     self.index += 1;

@@ -1,7 +1,13 @@
 [package]
 name = "terminal-keycode"
 version = "1.0.0"
+description = "convert bytes from a terminal input to keycodes"
 edition = "2021"
+license = "BSD-2-Clause"
+readme = "readme.md"
+repository = "https://github.com/substack/terminal-keycode.rs"
+homepage = "https://github.com/substack/terminal-keycode.rs"
+documentation = "https://docs.rs/terminal-keycode"
 
 [dev-dependencies]
 raw_tty = "0.1.0"
