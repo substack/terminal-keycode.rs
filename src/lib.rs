@@ -114,7 +114,7 @@ impl Decoder {
     self.index += 1;
     if self.lookahead > 0 {
       if (b >> 6) != 0b10 {
-        return match self.seq {
+        let res = match self.seq {
           [Some(x0),Some(x1),None,None,None] => vec![
             KeyCode::Byte(x0),KeyCode::Byte(x1)
           ],
@@ -126,6 +126,10 @@ impl Decoder {
           ],
           _ => panic!["unexpected keycode state"],
         };
+        self.lookahead = 0;
+        self.seq = [None,None,None,None,None];
+        self.index = 0;
+        return res;
       }
       let r = match (self.lookahead,self.seq) {
         (1,[Some(x0),Some(x1),None,None,None]) => {
