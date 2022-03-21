@@ -1,6 +1,6 @@
 # terminal-keycode
 
-convert bytes [from a terminal input][vt102] to keycodes
+convert bytes [from a terminal][vt102] into keycodes
 
 [vt102]: https://vt100.net/docs/vt102-ug/appendixc.html
 
