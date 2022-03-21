@@ -29,7 +29,7 @@ fn main() {
 
 output with various key presses:
 
-```
+``` sh
 $ cargo run -q --example keys
 code=Char('a') bytes=[97] printable=Some('a')
 code=Char('b') bytes=[98] printable=Some('b')
