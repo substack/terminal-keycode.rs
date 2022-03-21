@@ -19,7 +19,7 @@ pub enum KeyCode {
 }
 
 impl KeyCode {
-  pub fn char(&self) -> Option<char> {
+  pub fn printable(&self) -> Option<char> {
     match self {
       Self::Char(c) => Some(*c),
       Self::Space => Some(' '),

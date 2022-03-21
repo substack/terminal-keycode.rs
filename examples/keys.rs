@@ -9,7 +9,9 @@ fn main() {
   loop {
     stdin.read_exact(&mut buf).unwrap();
     for keycode in decoder.write(buf[0]) {
-      print!["code={:?} bytes={:?}\r\n", keycode, keycode.bytes()];
+      print!["code={:?} bytes={:?} printable={:?}\r\n",
+        keycode, keycode.bytes(), keycode.printable()
+      ];
       if keycode == KeyCode::CtrlC { return }
     }
   }
