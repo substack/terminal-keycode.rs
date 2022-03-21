@@ -96,6 +96,7 @@ impl Decoder {
       if let Some(c) = r {
         self.lookahead = 0;
         self.seq = [None,None,None,None,None];
+        self.index = 0;
         return vec![KeyCode::Char(c)];
       } else {
         return vec![];
@@ -219,7 +220,7 @@ impl Decoder {
           vec![]
         }
       },
-      _ => panic!["unhandled decode state"],
+      _ => panic!["unhandled decode state: {:?}", self.seq],
     };
     if !res.is_empty() && self.lookahead == 0 {
       self.seq = [None,None,None,None,None];
