@@ -244,7 +244,8 @@ impl Decoder {
       | [Some(0x1b),Some(0x5b),None,None,None,None,None]
       | [Some(0x1b),Some(0x4f),None,None,None,None,None]
       | [Some(0x1b),Some(0x5b),Some(0x33|0x35|0x36),None,None,None,None]
-      | [Some(0x1b),Some(0x5b),Some(0x31),None|Some(0x35|0x37|0x38|0x39),None,None,None]
+      | [Some(0x1b),Some(0x5b),Some(0x31),None|Some(0x3b|0x35|0x37|0x38|0x39),None,None,None]
+      | [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x32|0x35|0x36),None,None]
       | [Some(0x1b),Some(0x5b),Some(0x32),None|Some(0x30|0x31|0x33|0x34),None,None,None] => {
         vec![]
       },
@@ -252,6 +253,18 @@ impl Decoder {
       [Some(0x1b),Some(0x5b),Some(0x42),None,None,None,None] => vec![KeyCode::ArrowDown],
       [Some(0x1b),Some(0x5b),Some(0x43),None,None,None,None] => vec![KeyCode::ArrowRight],
       [Some(0x1b),Some(0x5b),Some(0x44),None,None,None,None] => vec![KeyCode::ArrowLeft],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x35),Some(0x41),None] => vec![KeyCode::CtrlArrowUp],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x35),Some(0x42),None] => vec![KeyCode::CtrlArrowDown],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x35),Some(0x43),None] => vec![KeyCode::CtrlArrowRight],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x35),Some(0x44),None] => vec![KeyCode::CtrlArrowLeft],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x32),Some(0x41),None] => vec![KeyCode::ShiftArrowUp],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x32),Some(0x42),None] => vec![KeyCode::ShiftArrowDown],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x32),Some(0x43),None] => vec![KeyCode::ShiftArrowRight],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x32),Some(0x44),None] => vec![KeyCode::ShiftArrowLeft],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x36),Some(0x41),None] => vec![KeyCode::CtrlShiftArrowUp],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x36),Some(0x42),None] => vec![KeyCode::CtrlShiftArrowDown],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x36),Some(0x43),None] => vec![KeyCode::CtrlShiftArrowRight],
+      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x3b),Some(0x36),Some(0x44),None] => vec![KeyCode::CtrlShiftArrowLeft],
       [Some(0x1b),Some(0x5b),Some(0x45),None,None,None,None] => vec![KeyCode::Numpad5],
       [Some(0x1b),Some(0x5b),Some(0x33),Some(0x7e),None,None,None] => vec![KeyCode::Delete],
       [Some(0x1b),Some(0x5b),Some(0x32),Some(0x7e),None,None,None] => vec![KeyCode::Insert],
@@ -271,93 +284,7 @@ impl Decoder {
       [Some(0x1b),Some(0x5b),Some(0x32),Some(0x31),Some(0x7e),None,None] => vec![KeyCode::F10],
       [Some(0x1b),Some(0x5b),Some(0x32),Some(0x33),Some(0x7e),None,None] => vec![KeyCode::F11],
       [Some(0x1b),Some(0x5b),Some(0x32),Some(0x34),Some(0x7e),None,None] => vec![KeyCode::F12],
-      [Some(0x1b),Some(x),None,None,None,None,None] => {
-        self.lookahead = lookahead(x);
-        if self.lookahead == 0 {
-          vec![KeyCode::Escape,lookup1(x)]
-        } else {
-          self.seq = [Some(x),None,None,None,None,None,None];
-          vec![KeyCode::Escape]
-        }
-      },
-      [Some(0x1b),Some(0x5b|0x4f),Some(x),None,None,None,None] => {
-        self.lookahead = lookahead(x);
-        let c = self.seq[1].unwrap();
-        if self.lookahead == 0 {
-          vec![KeyCode::Escape,KeyCode::Char(char::from(c)),lookup1(x)]
-        } else {
-          self.seq = [Some(x),None,None,None,None,None,None];
-          vec![KeyCode::Escape,KeyCode::Char(char::from(c))]
-        }
-      },
-      [Some(0x1b),Some(0x5b),Some(0x31|0x32|0x33|0x35|0x36),Some(x),None,None,None] => {
-        self.lookahead = lookahead(x);
-        let c = self.seq[2].unwrap();
-        if self.lookahead == 0 {
-          vec![
-            KeyCode::Escape,
-            KeyCode::Char(char::from(0x5b)),
-            KeyCode::Char(char::from(c)),
-            lookup1(x)
-          ]
-        } else {
-          self.seq = [Some(x),None,None,None,None,None,None];
-          vec![
-            KeyCode::Escape,
-            KeyCode::Char(char::from(0x5b)),
-            KeyCode::Char(char::from(c))
-          ]
-        }
-      },
-      [Some(0x1b),Some(0x5b),Some(0x31),Some(0x35|0x37|0x38|0x39),Some(x),None,None] => {
-        let c = self.seq[3].unwrap();
-        if self.lookahead == 0 {
-          vec![
-            KeyCode::Escape,
-            KeyCode::Char(char::from(0x5b)),
-            KeyCode::Char(char::from(0x31)),
-            KeyCode::Char(char::from(c)),
-            lookup1(x)
-          ]
-        } else {
-          self.seq = [Some(x),None,None,None,None,None,None];
-          vec![
-            KeyCode::Escape,
-            KeyCode::Char(char::from(0x5b)),
-            KeyCode::Char(char::from(0x31)),
-            KeyCode::Char(char::from(c))
-          ]
-        }
-      },
-      [Some(0x1b),Some(0x5b),Some(0x32),Some(0x30|0x31|0x33|0x34),Some(x),None,None] => {
-        let c = self.seq[3].unwrap();
-        if self.lookahead == 0 {
-          vec![
-            KeyCode::Escape,
-            KeyCode::Char(char::from(0x5b)),
-            KeyCode::Char(char::from(0x32)),
-            KeyCode::Char(char::from(c)),
-            lookup1(x)
-          ]
-        } else {
-          self.seq = [Some(x),None,None,None,None,None,None];
-          vec![
-            KeyCode::Escape,
-            KeyCode::Char(char::from(0x5b)),
-            KeyCode::Char(char::from(0x32)),
-            KeyCode::Char(char::from(c))
-          ]
-        }
-      },
-      [Some(x),None,None,None,None,None,None] => {
-        self.lookahead = lookahead(x);
-        if self.lookahead == 0 {
-          vec![lookup1(x)]
-        } else {
-          vec![]
-        }
-      },
-      _ => panic!["unhandled decode state: {:?}", self.seq],
+      _ => self.flush()
     };
     if !res.is_empty() && self.lookahead == 0 {
       self.clear();
@@ -369,6 +296,48 @@ impl Decoder {
     self.seq = [None,None,None,None,None,None,None];
     self.index = 0;
   }
+  fn flush(&mut self) -> Vec<KeyCode> {
+    let x = match self.seq {
+      [Some(x),None,None,None,None,None,None] => x,
+      [Some(_),Some(x),None,None,None,None,None] => x,
+      [Some(_),Some(_),Some(x),None,None,None,None] => x,
+      [Some(_),Some(_),Some(_),Some(x),None,None,None] => x,
+      [Some(_),Some(_),Some(_),Some(_),Some(x),None,None] => x,
+      [Some(_),Some(_),Some(_),Some(_),Some(_),Some(x),None] => x,
+      [Some(_),Some(_),Some(_),Some(_),Some(_),Some(_),Some(x)] => x,
+      _ => panic!["unexpected sequence state for flush(): {:?}", &self.seq],
+    };
+    self.lookahead = lookahead(x);
+    let r = match (self.lookahead,self.seq) {
+      (0,[Some(x),None,None,None,None,None,None]) => vec![chr(x)],
+      (_,[Some(_),None,None,None,None,None,None]) => vec![],
+      (0,[Some(a),Some(x),None,None,None,None,None]) => vec![chr(a),chr(x)],
+      (_,[Some(a),Some(_),None,None,None,None,None]) => vec![chr(a)],
+      (0,[Some(a),Some(b),Some(x),None,None,None,None]) => vec![chr(a),chr(b),chr(x)],
+      (_,[Some(a),Some(b),Some(_),None,None,None,None]) => vec![chr(a),chr(b)],
+      (0,[Some(a),Some(b),Some(c),Some(x),None,None,None]) => vec![chr(a),chr(b),chr(c),chr(x)],
+      (_,[Some(a),Some(b),Some(c),Some(_),None,None,None]) => vec![chr(a),chr(b),chr(c)],
+      (0,[Some(a),Some(b),Some(c),Some(d),Some(x),None,None]) => vec![chr(a),chr(b),chr(c),chr(d),chr(x)],
+      (_,[Some(a),Some(b),Some(c),Some(d),Some(_),None,None]) => vec![chr(a),chr(b),chr(c),chr(d)],
+      (0,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(x),None]) => vec![
+        chr(a),chr(b),chr(c),chr(d),chr(e),chr(x)
+      ],
+      (_,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(_),None]) => vec![
+        chr(a),chr(b),chr(c),chr(d),chr(e)
+      ],
+      (0,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(f),Some(x)]) => vec![
+        chr(a),chr(b),chr(c),chr(d),chr(e),chr(f),chr(x)
+      ],
+      (_,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(f),Some(_)]) => vec![
+        chr(a),chr(b),chr(c),chr(d),chr(e),chr(f)
+      ],
+      _ => panic!["unexpected lookahead sequence state for flush(): ({},{:?})", self.lookahead, &self.seq],
+    };
+    if self.lookahead > 0 {
+      self.seq = [Some(x),None,None,None,None,None,None];
+    }
+    r
+  }
 }
 
 fn lookahead(b: u8) -> usize {
@@ -378,7 +347,7 @@ fn lookahead(b: u8) -> usize {
   else { 0 }
 }
 
-fn lookup1(b: u8) -> KeyCode {
+fn chr(b: u8) -> KeyCode {
   match b {
     0x01 => KeyCode::CtrlA,
     0x02 => KeyCode::CtrlB,
@@ -408,7 +377,10 @@ fn lookup1(b: u8) -> KeyCode {
     0x1a => KeyCode::CtrlZ,
     0x20 => KeyCode::Space,
     0x7f => KeyCode::Backspace,
-    c => KeyCode::Char(char::from(c)),
+    c => {
+      if c < 0b11000000 { KeyCode::Char(char::from(c)) }
+      else { KeyCode::Byte(c) }
+    },
   }
 }
 
