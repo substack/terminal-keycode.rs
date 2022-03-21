@@ -30,8 +30,62 @@ impl KeyCode {
     }
   }
   pub fn bytes(&self) -> Vec<u8> {
-    //unimplemented![]
-    vec![]
+    match self {
+      Self::ArrowUp => vec![0x1b,0x5b,0x41],
+      Self::ArrowDown => vec![0x1b,0x5b,0x42],
+      Self::ArrowRight => vec![0x1b,0x5b,0x43],
+      Self::ArrowLeft => vec![0x1b,0x5b,0x44],
+      Self::Numpad5 => vec![0x1b,0x5b,0x45],
+      Self::Delete => vec![0x1b,0x5b,0x33,0x7e],
+      Self::Insert => vec![0x1b,0x5b,0x32,0x7e],
+      Self::Home => vec![0x1b,0x5b,0x48],
+      Self::End => vec![0x1b,0x5b,0x46],
+      Self::Escape => vec![0x1b],
+      Self::PageUp => vec![0x1b,0x5b,0x35,0x7e],
+      Self::PageDown => vec![0x1b,0x5b,0x36,0x7e],
+      Self::F1 => vec![0x1b,0x4f,0x50],
+      Self::F2 => vec![0x1b,0x4f,0x51],
+      Self::F3 => vec![0x1b,0x4f,0x52],
+      Self::F4 => vec![0x1b,0x4f,0x53],
+      Self::F5 => vec![0x1b,0x5b,0x31,0x35,0x7e],
+      Self::F6 => vec![0x1b,0x5b,0x31,0x37,0x7e],
+      Self::F7 => vec![0x1b,0x5b,0x31,0x38,0x7e],
+      Self::F8 => vec![0x1b,0x5b,0x31,0x39,0x7e],
+      Self::F9 => vec![0x1b,0x5b,0x32,0x30,0x7e],
+      Self::F10 => vec![0x1b,0x5b,0x32,0x31,0x7e],
+      Self::F11 => vec![0x1b,0x5b,0x32,0x33,0x7e],
+      Self::F12 => vec![0x1b,0x5b,0x32,0x34,0x7e],
+      Self::CtrlA => vec![0x01],
+      Self::CtrlB => vec![0x02],
+      Self::CtrlC => vec![0x03],
+      Self::CtrlD => vec![0x04],
+      Self::CtrlE => vec![0x05],
+      Self::CtrlF => vec![0x06],
+      Self::CtrlG => vec![0x07],
+      Self::CtrlH => vec![0x08],
+      Self::Tab => vec![0x09],
+      Self::Linefeed => vec![0x0a],
+      Self::CtrlK => vec![0x0b],
+      Self::CtrlL => vec![0x0c],
+      Self::Enter => vec![0x0d],
+      Self::CtrlN => vec![0x0e],
+      Self::CtrlO => vec![0x0f],
+      Self::CtrlP => vec![0x10],
+      Self::CtrlQ => vec![0x11],
+      Self::CtrlR => vec![0x12],
+      Self::CtrlS => vec![0x13],
+      Self::CtrlT => vec![0x14],
+      Self::CtrlU => vec![0x15],
+      Self::CtrlV => vec![0x16],
+      Self::CtrlW => vec![0x17],
+      Self::CtrlX => vec![0x18],
+      Self::CtrlY => vec![0x19],
+      Self::CtrlZ => vec![0x1a],
+      Self::Space => vec![0x20],
+      Self::Backspace => vec![0x7f],
+      Self::Char(c) => char_bytes(*c),
+      Self::Byte(b) => vec![*b],
+    }
   }
 }
 
@@ -269,4 +323,10 @@ fn lookup1(b: u8) -> KeyCode {
     0x7f => KeyCode::Backspace,
     c => KeyCode::Char(char::from(c)),
   }
+}
+
+fn char_bytes(c: char) -> Vec<u8> {
+  let mut buf = [0u8;4];
+  let n = c.encode_utf8(&mut buf).len();
+  buf[0..n].to_vec()
 }
