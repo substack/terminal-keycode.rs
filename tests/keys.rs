@@ -68,7 +68,7 @@ fn bytes() {
       if i == len-1 {
         assert_eq![decoder.write(*b), vec![keycode.clone()]];
       } else {
-        assert_eq![decoder.write(*b), vec![]];
+        assert_eq![decoder.write(*b), vec![], "keycode={:?}", &keycode];
       }
     }
   }
