@@ -360,41 +360,12 @@ impl Decoder {
     self.index = 0;
   }
   fn flush(&mut self) -> Vec<KeyCode> {
-    let x = match self.seq {
-      [Some(x),None,None,None,None,None,None] => x,
-      [Some(_),Some(x),None,None,None,None,None] => x,
-      [Some(_),Some(_),Some(x),None,None,None,None] => x,
-      [Some(_),Some(_),Some(_),Some(x),None,None,None] => x,
-      [Some(_),Some(_),Some(_),Some(_),Some(x),None,None] => x,
-      [Some(_),Some(_),Some(_),Some(_),Some(_),Some(x),None] => x,
-      [Some(_),Some(_),Some(_),Some(_),Some(_),Some(_),Some(x)] => x,
-      _ => panic!["unexpected sequence state for flush(): {:?}", &self.seq],
-    };
+    let (i,x) = self.seq.iter().enumerate().map_while(|(i,ox)| ox.map(|x| (i,x))).last()
+      .expect(&format!["unexpected sequence for flush(): {:?}", &self.seq]);
     self.lookahead = lookahead(x);
-    let r = match (self.lookahead,self.seq) {
-      (0,[Some(x),None,None,None,None,None,None]) => vec![chr(x)],
-      (_,[Some(_),None,None,None,None,None,None]) => vec![],
-      (0,[Some(a),Some(x),None,None,None,None,None]) => vec![chr(a),chr(x)],
-      (_,[Some(a),Some(_),None,None,None,None,None]) => vec![chr(a)],
-      (0,[Some(a),Some(b),Some(x),None,None,None,None]) => vec![chr(a),chr(b),chr(x)],
-      (_,[Some(a),Some(b),Some(_),None,None,None,None]) => vec![chr(a),chr(b)],
-      (0,[Some(a),Some(b),Some(c),Some(x),None,None,None]) => vec![chr(a),chr(b),chr(c),chr(x)],
-      (_,[Some(a),Some(b),Some(c),Some(_),None,None,None]) => vec![chr(a),chr(b),chr(c)],
-      (0,[Some(a),Some(b),Some(c),Some(d),Some(x),None,None]) => vec![chr(a),chr(b),chr(c),chr(d),chr(x)],
-      (_,[Some(a),Some(b),Some(c),Some(d),Some(_),None,None]) => vec![chr(a),chr(b),chr(c),chr(d)],
-      (0,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(x),None]) => vec![
-        chr(a),chr(b),chr(c),chr(d),chr(e),chr(x)
-      ],
-      (_,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(_),None]) => vec![
-        chr(a),chr(b),chr(c),chr(d),chr(e)
-      ],
-      (0,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(f),Some(x)]) => vec![
-        chr(a),chr(b),chr(c),chr(d),chr(e),chr(f),chr(x)
-      ],
-      (_,[Some(a),Some(b),Some(c),Some(d),Some(e),Some(f),Some(_)]) => vec![
-        chr(a),chr(b),chr(c),chr(d),chr(e),chr(f)
-      ],
-      _ => panic!["unexpected lookahead sequence state for flush(): ({},{:?})", self.lookahead, &self.seq],
+    let r = match self.lookahead {
+      0 => self.seq.iter().map_while(|x| x.map(chr)).collect(),
+      _ => self.seq.iter().take(i).map_while(|x| x.map(chr)).collect(),
     };
     if self.lookahead > 0 {
       self.seq = [Some(x),None,None,None,None,None,None];
