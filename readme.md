@@ -4,6 +4,18 @@ convert bytes [from a terminal][vt102] into keycodes
 
 [vt102]: https://vt100.net/docs/vt102-ug/appendixc.html
 
+Information is hard to come by, but these codes were measured experimentally in xterm with a 104 key
+US windows keyboard. Other terminals may give somewhat different results. For example, the tty login
+terminal on my linux laptop will only show the base keycode even if you hold down shift or ctrl.
+
+Different terminals and window managers will capture different key combos, so your program won't be
+able to catch everything.
+
+This library expects unicode input and will lookahead a corresponding number of bytes based on how
+many high bits are set, populating a `KeyCode::Char(char)` with a unicode scalar value. If a
+non-interpreted sequence is not a valid unicode scalar value, you will get a sequence of
+`KeyCode::Byte(u8)`.
+
 # example
 
 ``` rs
@@ -27,7 +39,7 @@ fn main() {
 }
 ```
 
-output with various key presses:
+output with various key presses in xterm:
 
 ``` sh
 $ cargo run -q --example keys
@@ -44,8 +56,12 @@ code=Backspace bytes=[127] printable=None
 code=ArrowUp bytes=[27, 91, 65] printable=None
 code=F9 bytes=[27, 91, 50, 48, 126] printable=None
 code=F3 bytes=[27, 79, 82] printable=None
+code=CtrlF1 bytes=[27, 91, 49, 59, 53, 80] printable=None
+code=CtrlShiftF2 bytes=[27, 91, 49, 59, 54, 81] printable=None
+code=ShiftF3 bytes=[27, 91, 49, 59, 50, 82] printable=None
+code=CtrlArrowUp bytes=[27, 91, 49, 59, 53, 65] printable=None
+code=CtrlShiftArrowLeft bytes=[27, 91, 49, 59, 54, 68] printable=None
 code=CtrlA bytes=[1] printable=None
 code=CtrlB bytes=[2] printable=None
 code=CtrlC bytes=[3] printable=None
 ```
-
