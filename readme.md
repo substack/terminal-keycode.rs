@@ -4,9 +4,9 @@ convert bytes [from a terminal][vt102] into keycodes
 
 [vt102]: https://vt100.net/docs/vt102-ug/appendixc.html
 
-Information is hard to come by, but these codes were measured experimentally in xterm with a 104 key
-US windows keyboard. Other terminals may give somewhat different results. For example, the tty login
-terminal on my linux laptop will only show the base keycode even if you hold down shift or ctrl.
+These codes were measured experimentally in xterm with a 104 key US windows keyboard.
+Other terminals may give somewhat different results. For example, the tty login terminal on my linux
+laptop will only show the base keycode even if you hold down shift or ctrl.
 
 Different terminals and window managers will capture different key combos, so your program won't be
 able to catch everything.
