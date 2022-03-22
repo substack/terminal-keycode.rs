@@ -363,10 +363,8 @@ impl Decoder {
     let (i,x) = self.seq.iter().enumerate().map_while(|(i,ox)| ox.map(|x| (i,x))).last()
       .expect(&format!["unexpected sequence for flush(): {:?}", &self.seq]);
     self.lookahead = lookahead(x);
-    let r = match self.lookahead {
-      0 => self.seq.iter().map_while(|x| x.map(chr)).collect(),
-      _ => self.seq.iter().take(i).map_while(|x| x.map(chr)).collect(),
-    };
+    let n = if self.lookahead == 0 { i+1 } else { i };
+    let r = self.seq.iter().take(n).map_while(|x| x.map(chr)).collect();
     if self.lookahead > 0 {
       self.seq = [Some(x),None,None,None,None,None,None];
     }
