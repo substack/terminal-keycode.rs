@@ -18,7 +18,7 @@ non-interpreted sequence is not a valid unicode scalar value, you will get a seq
 
 # example
 
-``` rs
+``` rust,no_run
 use std::io::Read;
 use raw_tty::IntoRawMode;
 use terminal_keycode::{Decoder,KeyCode};
@@ -64,4 +64,17 @@ code=CtrlShiftArrowLeft bytes=[27, 91, 49, 59, 54, 68] printable=None
 code=CtrlA bytes=[1] printable=None
 code=CtrlB bytes=[2] printable=None
 code=CtrlC bytes=[3] printable=None
+```
+
+If all you need are the byte sequences for different keycodes, you can do:
+
+``` rust,no_run
+use terminal_keycode::KeyCode;
+
+fn main() {
+  println!["{:?}", KeyCode::ArrowLeft.bytes()]; // [27, 91, 68]
+  println!["{:?}", KeyCode::CtrlShiftF1.bytes()]; // [27, 91, 49, 59, 54, 80]
+  println!["{:?}", KeyCode::Char('F').bytes()]; // [70]
+  println!["{:?}", KeyCode::Home.bytes()]; // [27, 91, 72]
+}
 ```
