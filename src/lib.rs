@@ -197,18 +197,7 @@ impl Decoder {
     self.index += 1;
     if self.lookahead > 0 {
       if (b >> 6) != 0b10 {
-        let res = match self.seq {
-          [Some(x0),Some(x1),None,None,None,None,None] => vec![
-            KeyCode::Byte(x0),KeyCode::Byte(x1)
-          ],
-          [Some(x0),Some(x1),Some(x2),None,None,None,None] => vec![
-            KeyCode::Byte(x0),KeyCode::Byte(x1),KeyCode::Byte(x2)
-          ],
-          [Some(x0),Some(x1),Some(x2),Some(x3),None,None,None] => vec![
-            KeyCode::Byte(x0),KeyCode::Byte(x1),KeyCode::Byte(x2),KeyCode::Byte(x3)
-          ],
-          _ => panic!["unexpected keycode state"],
-        };
+        let res = self.seq.iter().map_while(|ox| ox.map(|x| KeyCode::Byte(x))).collect();
         self.clear();
         return res;
       }
